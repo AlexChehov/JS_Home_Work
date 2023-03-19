@@ -1,31 +1,27 @@
-// початкові данні
-
-let users = [
-    { name: "Igor", city: "Kyiv", age: 20 },
-    { name: "Alex", city: "Kyiv", age: 50 },
-    { name: "Oleg", city: "Kyiv", age: 10 },
-    { name: "Igor", city: "Kyiv", age: 20 },
-    { name: "Alex", city: "Kyiv", age: 50 },
-    { name: "Oleg", city: "Kyiv", age: 10 },
-    { name: "Igor", city: "Kyiv", age: 20 },
-    { name: "Alex", city: "Kyiv", age: 50 },
-    { name: "Oleg", city: "Kyiv", age: 10 },
+const data = [
+	{
+		"name": "Abraham Marsh",
+		"phone": "1-843-901-9977",
+		"email": "morbi@google.org"
+	},
+	{
+		"name": "Isabella Mcgowan",
+		"phone": "1-874-933-8532",
+		"email": "ac.feugiat@protonmail.couk"
+	},
+	{
+		"name": "Leandra Levy",
+		"phone": "(482) 150-2683",
+		"email": "vitae.dolor@hotmail.couk"
+	},
+	{
+		"name": "Shana Byrd",
+		"phone": "1-134-348-2696",
+		"email": "sit.amet@hotmail.edu"
+	},
+	{
+		"name": "Victoria Vazquez",
+		"phone": "(676) 677-3028",
+		"email": "mauris.magna@yahoo.ca"
+	}
 ];
-
-// console.log(users);
-
-
-const groupElementsOfArray = (arr, oneSetQuantity = 3) => {
-    const result = [];
-
-    for (let i = 0; i < arr.length; i++) {
-        result.puch(arr.slice(i * oneSetQuantity, (i + 1) * oneSetQuantity));
-    }
-    return result.filter((arr) => arr.length > 0);
-};
-
-console.log(groupElementsOfArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 4));
-
-
-
-
