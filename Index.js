@@ -1,33 +1,37 @@
-const data = [
-	{
-		"name": "Abraham Marsh",
-		"phone": "1-843-901-9977",
-		"email": "morbi@google.org"
-	},
-	{
-		"name": "Isabella Mcgowan",
-		"phone": "1-874-933-8532",
-		"email": "ac.feugiat@protonmail.couk"
-	},
-	{
-		"name": "Leandra Levy",
-		"phone": "(482) 150-2683",
-		"email": "vitae.dolor@hotmail.couk"
-	},
-	{
-		"name": "Shana Byrd",
-		"phone": "1-134-348-2696",
-		"email": "sit.amet@hotmail.edu"
-	},
-	{
-		"name": "Victoria Vazquez",
-		"phone": "(676) 677-3028",
-		"email": "mauris.magna@yahoo.ca"
-	}
-];
+const emailField = document.querySelector("#email");
+const passwordField = document.querySelector("#password");
+const submitBtn = document.querySelector("#submit");
 
-new Promise((res, rej) => {
-	setTimeout(() => {
-		res(data)
-	}, 5000);
-}).then((data) => console.log('data',data) );
+const userEmailoutput = document.querySelector("#user-email");
+const userPasswordOutput = document.querySelector("#user-password");
+
+let user = localStorage.getItem("user")
+? JSON.parse(localStorage.getItem("user")) : undefined;
+
+if (user) {
+	const {email,password} = user;
+	userEmailoutput.textContent = email;
+	userPasswordOutput.textContent = password;
+}
+
+submitBtn.onclick = () => {
+	const email = emailField.value;
+	const password = passwordField.value;
+
+	user = { email, password };
+
+	userEmailoutput.textContent = email;
+	userPasswordOutput.textContent = password;
+
+	emailField.value = "";
+	password.value = "";
+
+	localStorage.setItem("user",JSON.stringify(user));
+}
+
+logoutButton.onclick = () => {
+	user = undefined;
+	localStorage.setItem("user","");
+	userEmailoutput.textContent = "";
+	userPasswordOutput.textContent = "";
+}
