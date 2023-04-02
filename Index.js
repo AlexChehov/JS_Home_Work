@@ -1,84 +1,174 @@
-const cityInput = document.querySelector("#city");
-const submitButton = document.querySelector("#submit");
-const weatherDataSection = document.querySelector("#weather-data");
-const loadingSection = document.querySelector("#loading-section");
+const input = document.querySelector("#todo-creation");
+const button = document.querySelector("#create-todo-button");
+const output = document.querySelector("#output");
+const usersOutput = document.querySelector("#users-output");
+const clearCurrentUserButton = document.querySelector("#clear-current-user");
+const searchTodoInput = document.querySelector("#todo-search");
 
-const requestOptions = {
-  method: "GET",
+const isLocalStorageTodosExists = localStorage.getItem("todos");
+
+let todos = isLocalStorageTodosExists
+  ? JSON.parse(isLocalStorageTodosExists)
+  : [];
+
+let users = [];
+let currentUser = undefined;
+
+renderTodos(todos);
+
+button.onclick = () => {
+  const todo = {
+    text: input.value,
+    done: false,
+  };
+
+  input.value = "";
+
+  todos.push(todo);
+
+  renderTodos(todos);
 };
-const API_KEY = `6409ee75b6ffc020adb31a565296a4bb`;
-const errorStatuses = ["404", 401, "400"];
-let isLoading = false;
 
-const prevRequests = [];
+function renderTodos(todosToRender) {
+  localStorage.setItem("todos", JSON.stringify(todos));
 
-const lastRequestData = localStorage.getItem("weather-data")
-  ? JSON.parse(localStorage.getItem("weather-data"))
-  : undefined;
+  output.innerHTML = "";
+  todosToRender.forEach((todo, i) => {
+    output.innerHTML += `
+            <div class="todo ${todo.done && "done"}">
+                <div>
+                    <span>${i + 1}.</span>
+                    <input type="checkbox" ${
+                      todo.done && "checked"
+                    } class="todo-checkbox" />
+                    <span>${todo.text}</span>
+                </div>
+                <button class="delete-todo">Delete</button>
+            </div>
+        `;
+  });
 
-lastRequestData && renderWeather(lastRequestData);
+  const checkboxes = [...document.querySelectorAll(".todo-checkbox")];
 
-// const lastRequestedCity = localStorage.getItem("city");
-// lastRequestedCity && getWeather(lastRequestedCity);
+  checkboxes.forEach((checkbox, i) => {
+    checkbox.onchange = () => {
+      const todo = todos[i];
+      changeTodo(todo.text, !todo.done);
+    };
+  });
 
-function getWeather(city) {
-  isLoading = true;
-  renderLoading(isLoading);
-  
-  fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`,
-    requestOptions
-  )
+  const deleteButtons = [...document.querySelectorAll(".delete-todo")];
+
+  deleteButtons.forEach((button, i) => {
+    button.onclick = () => {
+      const todo = todos[i];
+      deleteTodo(todo.text);
+    };
+  });
+}
+
+function changeTodo(text, newDone) {
+  todos = todos.map((todo) => {
+    if (text === todo.text) {
+      return { text, done: newDone };
+    }
+    return todo;
+  });
+
+  renderTodos(
+    currentUser ? todos.filter((todo) => todo.userId === currentUser.id) : todos
+  );
+}
+
+function deleteTodo(text) {
+  todos = todos.filter((todo) => todo.text !== text);
+  renderTodos(
+    currentUser ? todos.filter((todo) => todo.userId === currentUser.id) : todos
+  );
+}
+
+function searchTodo(value) {
+  const filteredTodos = currentUser
+    ? todos.filter(
+        (todo) => todo.text.includes(value) && todo.userId === currentUser.id
+      )
+    : todos.filter((todo) => todo.text.includes(value));
+
+  renderTodos(filteredTodos);
+}
+
+function getServerTodos() {
+  fetch("https://jsonplaceholder.typicode.com/todos")
     .then((response) => response.json())
-    .then((response) => {
-      console.log(response, "response");
+    .then((todosFromServer) => {
+      const tranformedTodos = todosFromServer.map((todo) => {
+        return {
+          text: todo.title,
+          done: todo.completed,
+          userId: todo.userId,
+          id: todo.id,
+        };
+      });
 
-      if (errorStatuses.includes(response.cod)) {
-        return renderError(response);
-      }
+      console.log(tranformedTodos, "todos");
 
-      localStorage.setItem("city", city);
-      localStorage.setItem("weather-data", JSON.stringify(response));
-      prevRequests.push(response);
-      console.log(prevRequests, "prevRequests");
-
-      renderWeather(response);
-    })
-    .catch((err) => console.log(err))
-    .finally(() => {
-        isLoading = false
-        renderLoading(isLoading);
+      todos = tranformedTodos;
+      renderTodos(todos);
     });
 }
 
-submitButton.onclick = () => {
-  getWeather(cityInput.value);
+getServerTodos();
+
+function getServerUsers() {
+  fetch("https://jsonplaceholder.typicode.com/users")
+    .then((response) => response.json())
+    .then((usersFromServer) => {
+      console.log(usersFromServer, "users");
+
+      users = usersFromServer;
+      renderUsers();
+    });
+}
+
+getServerUsers();
+
+function renderUsers() {
+  usersOutput.innerHTML = "";
+
+  users.forEach((user) => {
+    usersOutput.innerHTML += `
+            <button class="user-todos-button">${user.name}</button>
+        `;
+  });
+
+  const userButtons = [...document.querySelectorAll(".user-todos-button")];
+
+  userButtons.forEach((button, i) => {
+    button.onclick = (event) => {
+      searchTodoInput.value = "";
+      currentUser = users[i];
+      clearCurrentUserButton.disabled = false;
+
+      userButtons.forEach((btn) => btn.classList.remove("active-user-button"));
+      event.target.classList.add("active-user-button");
+
+      const todosOfCurrentUser = todos.filter(
+        (todo) => todo.userId === currentUser.id
+      );
+      renderTodos(todosOfCurrentUser);
+    };
+  });
+}
+
+clearCurrentUserButton.disabled = true;
+
+clearCurrentUserButton.onclick = () => {
+  currentUser = undefined;
+  clearCurrentUserButton.disabled = true;
+  renderTodos(todos);
 };
 
-function renderError(error) {
-  weatherDataSection.innerHTML = `<h3>${error.message}</h3>`;
-}
-
-function renderLoading(isLoading) {
-  loadingSection.innerHTML = isLoading ? `<h3>Loading...</h3>` : '';
-}
-
-function renderWeather(data) {
-  const { main, wind, sys, name } = data;
-  const { feels_like, temp, temp_min, temp_max, pressure } = main;
-  const { speed, deg, gust } = wind;
-
-  weatherDataSection.innerHTML = "";
-
-  weatherDataSection.innerHTML = `
-        <h3>Weather in ${name}</h3>
-        <p>Temp: ${temp}C</p>
-        <span>Feels like: ${feels_like}C</span>
-        <span>${temp_min}C - ${temp_max}C</span>
-        <span>Pressure: ${pressure}</span>
-        <h3>Wind</h3>
-        <span>Speed: ${speed}</span>
-        <span>Direction: ${deg}</span>
-        <span>Gust: ${gust || "Not available"}</span>
-    `;
-}
+searchTodoInput.oninput = () => {
+  console.log(searchTodoInput.value);
+  searchTodo(searchTodoInput.value);
+};

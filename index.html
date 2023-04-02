@@ -5,22 +5,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DZ22</title>
-    <link rel="stylesheet" href="wether.css">
+    <title>DZ23</title>
+    <link rel="stylesheet" href="css.css">
 </head>
 
 <body>
 
-    <main>
-        <h1>Input your city</h1>
+    <h1>Todo App</h1>
+    <header>
+        <div>
+            <input type="text" id="todo-creation" />
+            <button id="create-todo-button">Add todo</button>
+        </div>
+        <input type="text" id="todo-search" placeholder="Search Todos" />
+    </header>
+    <section id="users-output"></section>
+    <button id="clear-current-user">Clear curent user</button>
+    <main id="output">
 
-        <input type="text" placeholder="Enter the city" id="city" />
-        <button id="submit">Submit</button>
-
-        <section id="loading-section"></section>
-        <section id="weather-data"></section>
     </main>
-
 
     <script src="./index.js"></script>
 </body>
