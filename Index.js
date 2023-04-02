@@ -25,3 +25,9 @@ const data = [
 		"email": "mauris.magna@yahoo.ca"
 	}
 ];
+
+new Promise((res, rej) => {
+	setTimeout(() => {
+		res(data)
+	}, 5000);
+}).then((data) => console.log('data',data) );
