@@ -27,6 +27,7 @@ const setMusic = (i) => {
   songName.innerHTML = song.name;
   artistName.innerHTML = song.artist;
 
+  
 }
 
 // setMusic(0);
