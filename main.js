@@ -19,18 +19,21 @@ playButton.onclick = (e) => {
 };
 
 const setMusic = (i) => {
-  seekBar.value = 0;
+  // seekBar.value = 0;
+ 
   let song = songs[i];
+  songName.textContent = song.name;
   currentMusic = i;
-  music.src = song.path;
+  audioElement.src = song.path;
 
   songName.innerHTML = song.name;
   artistName.innerHTML = song.artist;
 
   
 }
+console.log(songs)
 
-// setMusic(0);
+setMusic(0);
 
 
 prevButton.onclick = () => {
@@ -42,7 +45,9 @@ prevButton.onclick = () => {
     audioElement.src = audioTracks.at(-1);
     currentTrackIndex = audioTracks.length - 1;
   }
+  setMusic(currentTrackIndex);
   audioElement.play();
+
 };
 
 nextButton.onclick = () => {
@@ -54,6 +59,7 @@ nextButton.onclick = () => {
     audioElement.src = audioTracks[0];
     currentTrackIndex = 0;
   }
+  setMusic(currentTrackIndex);
   audioElement.play();
 };
 

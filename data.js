@@ -27,3 +27,5 @@ let songs = [
     },
 
 ]
+
+window.songs = songs ;
