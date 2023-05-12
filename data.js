@@ -1,29 +1,29 @@
 let songs = [
 
     {
-        name: 'Song1',
+        name: 'Козацькому роду нема переводу',
         path:'trec1.mp3',
         artist:'Jerry Heil',
     },
     {
-        name: 'Song2',
+        name: 'Фортеця Бахмут',
         path:'trec2.mp3',
-        artist:'artist 2',
+        artist:'Антитіла',
     },
     {
-        name: 'Song3',
+        name: 'Маніфест',
         path:'trec3.mp3',
-        artist:'artist 3',
+        artist:'Артем Пивоваров',
     },
     {
-        name: 'Song4',
+        name: 'Кобра',
         path:'trec4.mp3',
-        artist:'artist 4',
+        artist:'The Hardkiss feat. MONATIK',
     },
     {
-        name: 'Song5',
+        name: 'Stefania',
         path:'trec5.mp3',
-        artist:'artist 5',
+        artist:'Kalush Orchestra',
     },
 
 ]
