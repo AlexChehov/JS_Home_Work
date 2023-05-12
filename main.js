@@ -1,67 +1,55 @@
-const audioElement = document.querySelector("audio");
+window.addEventListener("load", () => {
+  const videos = [
+    { title: "Evresin what i like", src: "./videos/video-0.mp4" , quote: "Some quote" },
+    { title: "Pasta is so GOOD", src: "./videos/video-1.mp4" , quote: "Some quote" },
+    { title: "I know you want this", src: "./videos/video-2.mp4" , quote: "Some quote" },
+    { title: "Coffee is important", src: "./videos/video-3.mp4" , quote: "Some quote" },
+  ];
 
-const audioTracks = ["trec1.mp3", "trec2.mp3", "trec3.mp3", "trec4.mp3", "trec5.mp3"];
-let currentTrackIndex = 0;
+  let currentVideoIndex = 0;
 
-audioElement.src = audioTracks[currentTrackIndex];
+  const videoElement = document.querySelector("#video");
+  const h1 = document.querySelector("h1");
 
-//buttons
-const playButton = document.querySelector("#play");
-const prevButton = document.querySelector("#prev");
-const nextButton = document.querySelector("#next");
+  const prev = document.querySelector("#prev");
+  const next = document.querySelector("#next");
 
-const songName = document.querySelector('.music-name');
-const artistName = document.querySelector('.artist-name');
+  setVideo(currentVideoIndex);
 
-playButton.onclick = (e) => {
-  audioElement.paused ? audioElement.play() : audioElement.pause();
-  e.target.textContent = audioElement.paused ? "Play" : "Stop";
-};
+  document.body.addEventListener("click", () => {
+    videoElement.play();
+  });
 
-const setMusic = (i) => {
-  // seekBar.value = 0;
- 
-  let song = songs[i];
-  songName.textContent = song.name;
-  currentMusic = i;
-  audioElement.src = song.path;
+  function setVideo(index, delay = 0) {
+    const action = () => {
+      const { src, title } = videos[index];
+      videoElement.src = src;
+      h1.textContent = title;
 
-  songName.innerHTML = song.name;
-  artistName.innerHTML = song.artist;
-
-  
-}
-console.log(songs)
-
-setMusic(0);
-
-
-prevButton.onclick = () => {
-  currentTrackIndex--;
-
-  if (audioTracks[currentTrackIndex]) {
-    audioElement.src = audioTracks[currentTrackIndex];
-  } else {
-    audioElement.src = audioTracks.at(-1);
-    currentTrackIndex = audioTracks.length - 1;
+      videoElement.play();
+    };
+    delay ? setTimeout(() => action(), delay) : action();
   }
-  setMusic(currentTrackIndex);
-  audioElement.play();
 
-};
+  prev.onclick = () => {
+    currentVideoIndex--;
 
-nextButton.onclick = () => {
-  currentTrackIndex++;
+    if (videos[currentVideoIndex]) {
+      setVideo(currentVideoIndex, 1000);
+    } else {
+      currentVideoIndex = videos.length - 1;
+      setVideo(currentVideoIndex, 1000);
+    }
+  };
 
-  if (audioTracks[currentTrackIndex]) {
-    audioElement.src = audioTracks[currentTrackIndex];
-  } else {
-    audioElement.src = audioTracks[0];
-    currentTrackIndex = 0;
-  }
-  setMusic(currentTrackIndex);
-  audioElement.play();
-};
+  next.onclick = () => {
+    currentVideoIndex++;
 
-console.log(audioElement, "ELEMNT");
-
+    if (videos[currentVideoIndex]) {
+      setVideo(currentVideoIndex, 1000);
+    } else {
+      currentVideoIndex = 0;
+      setVideo(currentVideoIndex, 1000);
+    }
+  };
+});
