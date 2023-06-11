@@ -1,12 +1,13 @@
 class App {
-    static API_KEY = "417a5eb3d1mshed972e378934e9ap106f51jsn2f50fcd2d0fc";
+    static API_KEY = "131a6b44bemshe8f2ab50bab3df7p1dde16jsnab9a648185f2";
     static SEARCH_URL =
-      "https://online-movie-database.p.rapidapi.com/auto-complete?q=";
+    "https://deezerdevs-deezer.p.rapidapi.com/search?q=";
   
     static DEFAULT_HEADERS = {
       "X-RapidAPI-Key": App.API_KEY,
-      "X-RapidAPI-Host": "online-movie-database.p.rapidapi.com",
+      "X-RapidAPI-Host": "deezerdevs-deezer.p.rapidapi.com",
     };
+
   
     static searchButton = document.querySelector("#search-button");
     static input = document.querySelector("input");
