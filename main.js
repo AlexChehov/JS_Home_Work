@@ -1,243 +1,251 @@
 class App {
-    static API_KEY = "131a6b44bemshe8f2ab50bab3df7p1dde16jsnab9a648185f2";
-    static SEARCH_URL =
+  static API_KEY = "131a6b44bemshe8f2ab50bab3df7p1dde16jsnab9a648185f2";
+  static SEARCH_URL =
     "https://deezerdevs-deezer.p.rapidapi.com/search?q=";
-  
-    static DEFAULT_HEADERS = {
-      "X-RapidAPI-Key": App.API_KEY,
-      "X-RapidAPI-Host": "deezerdevs-deezer.p.rapidapi.com",
+
+  static DEFAULT_HEADERS = {
+    "X-RapidAPI-Key": App.API_KEY,
+    "X-RapidAPI-Host": "deezerdevs-deezer.p.rapidapi.com",
+  };
+
+
+  static searchButton = document.querySelector("#search-button");
+  static input = document.querySelector("input");
+  static output = document.querySelector("section");
+
+  static watchListSwitcher = document.querySelector("#watch-list-switcher");
+  static watchListOutput = document.querySelector("#watchList");
+  static watchListRandomButton = document.querySelector("#random-film-button");
+
+  static SECTIONS = {
+    main: "main",
+    filmList: "filmList",
+  };
+
+  constructor(data = [], watchList = []) {
+    this.data = data;
+    this.watchList = watchList;
+    this.currentSection = App.SECTIONS.main;
+
+    App.searchButton.onclick = () => this.onButtonClick();
+
+    App.watchListSwitcher.onclick = () =>
+      this.currentSection === App.SECTIONS.main
+        ? this.renderWatchlist()
+        : this.renderMainView();
+
+    App.watchListRandomButton.onclick = () => {
+      // turning border color back to normal
+      [...document.querySelectorAll(".film-elem")].forEach((el) => {
+        if (this.checkIfWathclistContainsFilm(el.id)) {
+          el.style.border = "1px solid palevioletred";
+        } else {
+          el.style.border = "1px solid white";
+        }
+      });
+
+      const randomFilmData =
+        this.getRandomFilm(
+          this.currentSection === App.SECTIONS.main
+            ? this.data
+            : this.getWatchListData()
+        ) || null;
+
+      if (!randomFilmData) return alert("There is no random film");
+
+      const randomFilmElement = document.querySelector(`#${randomFilmData.id}`);
+
+      randomFilmElement.style.border = "1px solid lime";
+
+      randomFilmElement.scrollIntoView({ behavior: "smooth" });
     };
 
-  
-    static searchButton = document.querySelector("#search-button");
-    static input = document.querySelector("input");
-    static output = document.querySelector("section");
-  
-    static watchListSwitcher = document.querySelector("#watch-list-switcher");
-    static watchListOutput = document.querySelector("#watchList");
-    static watchListRandomButton = document.querySelector("#random-film-button");
-  
-    static SECTIONS = {
-      main: "main",
-      filmList: "filmList",
-    };
-  
-    constructor(data = [], watchList = []) {
-      this.data = data;
-      this.watchList = watchList;
-      this.currentSection = App.SECTIONS.main;
-  
-      App.searchButton.onclick = () => this.onButtonClick();
-  
-      App.watchListSwitcher.onclick = () =>
-        this.currentSection === App.SECTIONS.main
-          ? this.renderWatchlist()
-          : this.renderMainView();
-  
-      App.watchListRandomButton.onclick = () => {
-        // turning border color back to normal
-        [...document.querySelectorAll(".film-elem")].forEach((el) => {
-          if (this.checkIfWathclistContainsFilm(el.id)) {
-            el.style.border = "1px solid palevioletred";
-          } else {
-            el.style.border = "1px solid white";
-          }
-        });
-  
-        const randomFilmData =
-          this.getRandomFilm(
-            this.currentSection === App.SECTIONS.main
-              ? this.data
-              : this.getWatchListData()
-          ) || null;
-  
-        if (!randomFilmData) return alert("There is no random film");
-  
-        const randomFilmElement = document.querySelector(`#${randomFilmData.id}`);
-  
-        randomFilmElement.style.border = "1px solid lime";
-  
-        randomFilmElement.scrollIntoView({ behavior: "smooth" });
-      };
-  
-      App.input.oninput = (e) => this.onInputChange(e);
-    }
-  
-    onInputChange(e) {
-      if (this.currentSection === App.SECTIONS.filmList) {
-        const films = this.getWatchListData();
-  
-        const filteredFilms = films.filter(({ l }) =>
-          l.toLowerCase().includes(e.target.value.toLowerCase())
-        );
-  
-        this.renderData(filteredFilms, App.watchListOutput, true);
-      }
-    }
-  
-    //start search
-    onButtonClick() {
-      console.log(App.input.value);
-      this.getDataBySearch(App.input.value).then(() => {
-        App.input.value = "";
-        console.log("Data", this.data);
-  
-        this.renderData(this.data, App.output);
-      });
-    }
-  
-    async getDataBySearch(filmName = "") {
-      try {
-        const response = await fetch(App.SEARCH_URL + filmName, {
-          headers: App.DEFAULT_HEADERS,
-        });
-        const data = await response.json();
-  
-        this.data = data.d ? data.d : [];
-      } catch (e) {
-        console.log(e, "error");
-        alert("Query is invalid");
-      }
-    }
-  
-    getRandomFilm(films) {
-      return films[Math.floor(Math.random() * films.length)];
-    }
-  
-    getWatchListData() {
-      return JSON.parse(localStorage.getItem("watchList") || "[]");
-    }
-  
-    addWatchlistData(film) {
-      const oldWatchList = this.getWatchListData();
-      localStorage.setItem("watchList", JSON.stringify([...oldWatchList, film]));
-    }
-  
-    removeWatchListData(id) {
-      const oldWatchList = this.getWatchListData();
-      localStorage.setItem(
-        "watchList",
-        JSON.stringify([...oldWatchList].filter((film) => film.id !== id))
+    App.input.oninput = (e) => this.onInputChange(e);
+  }
+
+  onInputChange(e) {
+    if (this.currentSection === App.SECTIONS.filmList) {
+      const films = this.getWatchListData();
+
+      const filteredFilms = films.filter(({ l }) =>
+        l.toLowerCase().includes(e.target.value.toLowerCase())
       );
+
+      this.renderData(filteredFilms, App.watchListOutput, true);
     }
-  
-    checkIfWathclistContainsFilm(id) {
-      return this.getWatchListData().find((film) => film.id === id)
-        ? true
-        : false;
+  }
+
+  //start search
+  onButtonClick() {
+    console.log(App.input.value);
+    this.getDataBySearch(App.input.value).then(() => {
+      App.input.value = "";
+      console.log("Data", this.data);
+
+      this.renderData(this.data, App.output);
+    });
+  }
+
+  async getDataBySearch(filmName = "") {
+    try {
+      const response = await fetch(App.SEARCH_URL + filmName, {
+        headers: App.DEFAULT_HEADERS,
+      });
+      const data = await response.json();
+
+      this.data = data.d ? data.d : [];
+    } catch (e) {
+      console.log(e, "error");
+      alert("Query is invalid");
     }
-  
-    renderData(
-      dataToRender,
-      outputElement = App.output,
-      isUsingAsWatchList = false
-    ) {
-      outputElement.innerHTML = "";
-  
-      dataToRender.forEach((film) => {
-        const {
-          id,
-          l: title,
-          q,
-          qid: type,
-          rank,
-          s: actors,
-          y: year,
-          i: imageData,
-        } = film;
-        const { imageUrl, width, height } = imageData || {
-          imageUrl:
-            "https://static.vecteezy.com/system/resources/previews/007/160/087/original/video-icon-video-symbol-play-video-sign-free-vector.jpg",
-          width: 1000,
-          height: 1000,
-        };
-  
-        const isFilmAddedToWatchList = this.checkIfWathclistContainsFilm(id);
-  
-        outputElement.innerHTML += `<div id="${id}" class="film-elem ${
-          isFilmAddedToWatchList ? "watch-list-film" : ""
+  }
+
+  getRandomFilm(films) {
+    return films[Math.floor(Math.random() * films.length)];
+  }
+
+  getWatchListData() {
+    return JSON.parse(localStorage.getItem("watchList") || "[]");
+  }
+
+  addWatchlistData(film) {
+    const oldWatchList = this.getWatchListData();
+    localStorage.setItem("watchList", JSON.stringify([...oldWatchList, film]));
+  }
+
+  removeWatchListData(id) {
+    const oldWatchList = this.getWatchListData();
+    localStorage.setItem(
+      "watchList",
+      JSON.stringify([...oldWatchList].filter((film) => film.id !== id))
+    );
+  }
+
+  checkIfWathclistContainsFilm(id) {
+    return this.getWatchListData().find((film) => film.id === id)
+      ? true
+      : false;
+  }
+
+  renderData(
+    dataToRender,
+    outputElement = App.output,
+    isUsingAsWatchList = false
+  ) {
+    outputElement.innerHTML = "";
+
+    dataToRender.forEach((film) => {
+
+      // id:134720168
+      // readable:true
+      // title:"Emine"
+      // title_short:"Emine"
+      // title_version:""
+      // link:"https://www.deezer.com/track/134720168"
+      // duration:225
+      // rank:139833
+      // explicit_lyrics:false
+      // explicit_content_lyrics:0
+      // explicit_content_cover:2
+      // preview:"https://cdns-preview-6.dzcdn.net/stream/c-6b937f151c3005554f7f240faeb3ef10-4.mp3"
+      // md5_image:"c90e50b98b2e11927280c573b63ac7a5"
+
+      const {
+        id, title, rank, duration, explicit_content_cover,
+      } = film;
+      const { imageUrl, width, height } = imageData || {
+        imageUrl:
+          "https://static.vecteezy.com/system/resources/previews/007/160/087/original/video-icon-video-symbol-play-video-sign-free-vector.jpg",
+        width: 1000,
+        height: 1000,
+      };
+
+      const isFilmAddedToWatchList = this.checkIfWathclistContainsFilm(id);
+
+      outputElement.innerHTML += `<div id="${id}" class="film-elem ${isFilmAddedToWatchList ? "watch-list-film" : ""
         }">
           <img src="${imageUrl}" />
           <h3>${title}</h3>
           <span>Rating: ${rank}</span>
+          <span>Rating: ${duration}</span>
+          <span>Rating: ${explicit_content_cover}</span>
           <span>Actors: ${actors}</span>
           <span>Year: ${year || "unknown"}</span>
           <div class="btn-wrapper">
-            <button id="btn-${id}" class="film-button">${
-          isFilmAddedToWatchList ? "DeleteFromWatchList" : "AddToWatchLater"
+            <button id="btn-${id}" class="film-button">${isFilmAddedToWatchList ? "DeleteFromWatchList" : "AddToWatchLater"
         }</button>
           </div>
         </div>`;
-      });
-  
-      const filmsButtons =
-        this.currentSection === App.SECTIONS.main
-          ? App.output.querySelectorAll(".film-button")
-          : App.watchListOutput.querySelectorAll(".film-button");
-  
-      [...filmsButtons].forEach((btn, i) => {
-        btn.onclick = () => {
-          const currentFilm = dataToRender[i];
-  
-          if (this.checkIfWathclistContainsFilm(currentFilm.id)) {
-            this.removeWatchListData(currentFilm.id);
-  
-            isUsingAsWatchList &&
-              this.renderData(this.getWatchListData(), App.watchListOutput, true);
-  
-            // DZ task ->
-            btn.textContent = "AddToWatchLater";
-  
-            const buttonFromMain = App.output.querySelector(`#${btn.id}`);
-            const buttonFromWatchList = App.watchListOutput.querySelector(
-              `#${btn.id}`
-            );
-  
-            if (buttonFromMain) buttonFromMain.textContent = "AddToWatchLater";
-            if (buttonFromWatchList)
-              buttonFromWatchList.textContent = "AddToWatchLater";
-          } else {
-            this.addWatchlistData(currentFilm);
-            // DZ task ->
-            btn.textContent = "DeleteFromWatchList";
-  
-            const buttonFromMain = App.output.querySelector(`#${btn.id}`);
-            const buttonFromWatchList = App.watchListOutput.querySelector(
-              `#${btn.id}`
-            );
-  
-            if (buttonFromMain)
-              buttonFromMain.textContent = "DeleteFromWatchList";
-            if (buttonFromWatchList)
-              buttonFromWatchList.textContent = "DeleteFromWatchList";
-          }
-        };
-      });
-    }
-  
-    renderWatchlist() {
-      App.output.style.display = "none";
-      App.watchListOutput.style.display = "flex";
-      App.searchButton.style.display = "none";
-  
-      App.watchListSwitcher.textContent = "Go to main page";
-  
-      this.currentSection = App.SECTIONS.filmList;
-  
-      const watchListData = this.getWatchListData();
-  
-      this.renderData(watchListData, App.watchListOutput, true);
-    }
-  
-    renderMainView() {
-      App.output.style.display = "flex";
-      App.watchListOutput.style.display = "none";
-      App.searchButton.style.display = "inline-block";
-  
-      App.watchListSwitcher.textContent = "Go to watch list";
-  
-      this.currentSection = App.SECTIONS.main;
-    }
+    });
+
+    const filmsButtons =
+      this.currentSection === App.SECTIONS.main
+        ? App.output.querySelectorAll(".film-button")
+        : App.watchListOutput.querySelectorAll(".film-button");
+
+    [...filmsButtons].forEach((btn, i) => {
+      btn.onclick = () => {
+        const currentFilm = dataToRender[i];
+
+        if (this.checkIfWathclistContainsFilm(currentFilm.id)) {
+          this.removeWatchListData(currentFilm.id);
+
+          isUsingAsWatchList &&
+            this.renderData(this.getWatchListData(), App.watchListOutput, true);
+
+          // DZ task ->
+          btn.textContent = "AddToWatchLater";
+
+          const buttonFromMain = App.output.querySelector(`#${btn.id}`);
+          const buttonFromWatchList = App.watchListOutput.querySelector(
+            `#${btn.id}`
+          );
+
+          if (buttonFromMain) buttonFromMain.textContent = "AddToWatchLater";
+          if (buttonFromWatchList)
+            buttonFromWatchList.textContent = "AddToWatchLater";
+        } else {
+          this.addWatchlistData(currentFilm);
+          // DZ task ->
+          btn.textContent = "DeleteFromWatchList";
+
+          const buttonFromMain = App.output.querySelector(`#${btn.id}`);
+          const buttonFromWatchList = App.watchListOutput.querySelector(
+            `#${btn.id}`
+          );
+
+          if (buttonFromMain)
+            buttonFromMain.textContent = "DeleteFromWatchList";
+          if (buttonFromWatchList)
+            buttonFromWatchList.textContent = "DeleteFromWatchList";
+        }
+      };
+    });
   }
-  
-  new App();
+
+  renderWatchlist() {
+    App.output.style.display = "none";
+    App.watchListOutput.style.display = "flex";
+    App.searchButton.style.display = "none";
+
+    App.watchListSwitcher.textContent = "Go to main page";
+
+    this.currentSection = App.SECTIONS.filmList;
+
+    const watchListData = this.getWatchListData();
+
+    this.renderData(watchListData, App.watchListOutput, true);
+  }
+
+  renderMainView() {
+    App.output.style.display = "flex";
+    App.watchListOutput.style.display = "none";
+    App.searchButton.style.display = "inline-block";
+
+    App.watchListSwitcher.textContent = "Go to watch list";
+
+    this.currentSection = App.SECTIONS.main;
+  }
+}
+
+new App();
