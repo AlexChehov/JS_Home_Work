@@ -5,12 +5,15 @@ import fs from "fs";
 const data = JSON.parse(fs.readFileSync("./data.json"));
 
 //DZ
-function changeUser(newUserData, i) {}
+function changeUser(newUserData, i) {
+    
+}
 
 console.log(data, "data");
 
-function main(a, b) {
-  return a + b;
-}
 
-console.log(main(10, 15));
+// function main(a, b) {
+//   return a + b;
+// }
+
+// console.log(main(10, 15));
