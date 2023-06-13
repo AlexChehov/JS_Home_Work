@@ -4,9 +4,12 @@
   "description": "My first node js project",
   "main": "index.mjs",
   "scripts": {
-    "start": "node index.mjs",
+    "start": "node dataCollector.mjs && node index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "03544@ukr.net",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "country-codes-list": "^1.6.10"
+  }
 }
