@@ -4,6 +4,7 @@
   "description": "My first node js project",
   "main": "index.mjs",
   "scripts": {
+    "start": "node index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "03544@ukr.net",
