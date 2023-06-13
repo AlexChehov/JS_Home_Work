@@ -93,7 +93,9 @@ class App {
       });
       const data = await response.json();
 
-      this.data = data.d ? data.d : [];
+       console.log(data);
+
+      this.data = data.data ? data.data : [];
     } catch (e) {
       console.log(e, "error");
       alert("Query is invalid");
@@ -151,7 +153,7 @@ class App {
       // md5_image:"c90e50b98b2e11927280c573b63ac7a5"
 
       const {
-        id, title, rank, duration, explicit_content_cover,
+        id, title, rank, duration, explicit_content_cover, imageData
       } = film;
       const { imageUrl, width, height } = imageData || {
         imageUrl:
