@@ -15,5 +15,4 @@ console.log(data, "data");
 // function main(a, b) {
 //   return a + b;
 // }
-
 // console.log(main(10, 15));
