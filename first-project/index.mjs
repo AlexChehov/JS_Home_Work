@@ -26,7 +26,14 @@ function main(data) {
 
     console.log(countriesLayouts, "!!!");
 
-    const htmlConstructor = new HTMLConstractor("countries.html", );
+    const htmlConstructor = new HTMLConstractor(
+        "countries",
+        countriesLayouts.json("")
+        );
 
-}
+    htmlConstructor.genereteFile("html");
+    htmlConstructor.genereteFile("");
+
+};
+
 main(data);
